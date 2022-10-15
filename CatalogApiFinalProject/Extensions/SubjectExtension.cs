@@ -7,6 +7,10 @@ namespace CatalogApiFinalProject.Extensions
     {
         public static SubjectToGet ToDto(this Subject subject)
         {
+            if (subject == null)
+            {
+                return null;
+            }
             return
                 new SubjectToGet
                 {

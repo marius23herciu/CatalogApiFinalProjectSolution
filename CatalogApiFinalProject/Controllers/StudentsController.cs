@@ -26,30 +26,29 @@ namespace CatalogApiFinalProject.Controllers
         /*• Obtinerea tuturor studentilor*/
 
         /// <summary>
-        /// Returns all students with first name and last name.
+        /// Returns all students with full name, age and address.
         /// </summary>
         /// <returns></returns>
         [HttpGet("all")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<StudentToGet>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<StudentWithAddressToGet>))]
         public IActionResult GetAllStudents()
         {
-            var students = ctx.Students.Include(s => s.Subjects).ToList().Select(s => s.ToDto());
-            return Ok(students);
+            return Ok(ctx.Students.Include(s => s.Address).Select(s => s.ToDto()).ToList());
         }
 
         /*• Obtinerea unui student dupa ID*/
 
         /// <summary>
-        /// Returns name of a selected student by his Id.
+        /// Returns informations of a selected student by his Id.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StudentToGet))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StudentWithAddressToGet))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         public IActionResult GetStudentById([FromRoute] int id)
         {
-            var student = ctx.Students.Where(s => s.Id == id).FirstOrDefault();
+            var student = ctx.Students.Include(a=>a.Address).Where(s => s.Id == id).FirstOrDefault();
             if (student==null)
             {
                 return NotFound("Student Id does not exist.");
@@ -65,7 +64,7 @@ namespace CatalogApiFinalProject.Controllers
         /// <param name="studentToCreate"></param>
         /// <returns></returns>
         [HttpPost("create")]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(StudentToGet))]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(StudentWithAddressToGet))]
         public IActionResult CreateStudent([FromBody] StudentToCreate studentToCreate)
         {
             var newStudent = dataLayer.CreateStudent(studentToCreate.FirstName, studentToCreate.LastName, studentToCreate.Age);
@@ -83,14 +82,14 @@ namespace CatalogApiFinalProject.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         public IActionResult DeleteStudent([FromBody] int studentId)
         {
-            var studentToRemove = ctx.Students.Include(a => a.Adresse).Where(s => s.Id == studentId).FirstOrDefault();
+            var studentToRemove = ctx.Students.Include(a => a.Address).Where(s => s.Id == studentId).FirstOrDefault();
 
             if (studentToRemove == null)
             {
                 return NotFound("Student does not exist.");
             }
 
-            studentToRemove.Adresse = null;
+            studentToRemove.Address = null;
             ctx.Students.Remove(studentToRemove);
             ctx.SaveChanges();
 
@@ -147,16 +146,16 @@ namespace CatalogApiFinalProject.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         public IActionResult ChangeStudentAddress([FromRoute] int studentId, [FromBody] AddressToCreate address)
         {
-            var student = ctx.Students.Include(s => s.Adresse).Where(s => s.Id == studentId).FirstOrDefault();
+            var student = ctx.Students.Include(s => s.Address).Where(s => s.Id == studentId).FirstOrDefault();
 
             if (student == null)
             {
                 return NotFound($"Student with Id {studentId} does not exist.");
             }
 
-            if (student.Adresse == null)
+            if (student.Address == null)
             {
-                student.Adresse = new Address
+                student.Address = new Address
                 {
                     City = address.City,
                     Street = address.Street,
@@ -165,7 +164,7 @@ namespace CatalogApiFinalProject.Controllers
             }
             else
             {
-                var adresseToChange = student.Adresse;
+                var adresseToChange = student.Address;
                 adresseToChange.City = address.City;
                 adresseToChange.Street = address.Street;
                 adresseToChange.Number = address.Number;
@@ -190,7 +189,7 @@ stearsa*/
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         public IActionResult DeleteStudentAndAddress([FromBody] int studentId, [FromQuery] bool deleteAddress)
         {
-            var studentToRemove = ctx.Students.Include(a => a.Adresse).Where(s => s.Id == studentId).FirstOrDefault();
+            var studentToRemove = ctx.Students.Include(a => a.Address).Where(s => s.Id == studentId).FirstOrDefault();
 
             if (studentToRemove == null)
             {

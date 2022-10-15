@@ -2,7 +2,7 @@
 {
     public class AverageForSubject
     {
-        public int SubjectId { get; set; }
+        public string Name { get; set; }
         public double Average { get; set; }
     }
 }

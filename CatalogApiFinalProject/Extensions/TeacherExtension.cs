@@ -7,6 +7,11 @@ namespace CatalogApiFinalProject.Extensions
     {
         public static TeacherToGet ToDto(this Teacher teacher)
         {
+            if (teacher == null)
+            {
+                return null;
+            }
+
             return
                 new TeacherToGet
                 {

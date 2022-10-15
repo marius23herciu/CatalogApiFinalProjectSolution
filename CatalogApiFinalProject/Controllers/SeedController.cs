@@ -157,7 +157,7 @@ namespace CatalogApiFinalProject.Controllers
                 FirstName = "Ionut",
                 LastName = "Antonescu",
                 Age = 20,
-                Adresse = new Address
+                Address = new Address
                 {
                     City = "Bucuresti",
                     Street = "Obor",
@@ -224,7 +224,7 @@ namespace CatalogApiFinalProject.Controllers
                 FirstName = "Ioana",
                 LastName = "Popescu",
                 Age = 20,
-                Adresse = new Address
+                Address = new Address
                 {
                     City = "Bucuresti",
                     Street = "Mare",
@@ -292,7 +292,7 @@ namespace CatalogApiFinalProject.Controllers
                 FirstName = "Dan",
                 LastName = "Bitman",
                 Age = 45,
-                Adresse = new Address
+                Address = new Address
                 {
                     City = "Bucuresti",
                     Street = "Revolutiei",
@@ -360,7 +360,7 @@ namespace CatalogApiFinalProject.Controllers
                 FirstName = "Crina",
                 LastName = "Manea",
                 Age = 30,
-                Adresse = new Address
+                Address = new Address
                 {
                     City = "Iasi",
                     Street = "Pacurari",
@@ -428,7 +428,7 @@ namespace CatalogApiFinalProject.Controllers
                 FirstName = "George",
                 LastName = "Trifan",
                 Age = 22,
-                Adresse = new Address
+                Address = new Address
                 {
                     City = "Timisoara",
                     Street = "Bega",
@@ -497,7 +497,7 @@ namespace CatalogApiFinalProject.Controllers
                 FirstName = "Paul",
                 LastName = "Dobre",
                 Age = 18,
-                Adresse = new Address
+                Address = new Address
                 {
                     City = "Arad",
                     Street = "Viilor",
@@ -566,7 +566,7 @@ namespace CatalogApiFinalProject.Controllers
                 FirstName = "Diana",
                 LastName = "Velescu",
                 Age = 25,
-                Adresse = new Address
+                Address = new Address
                 {
                     City = "Ramnicu Valcea",
                     Street = "Oltulu",
@@ -634,7 +634,7 @@ namespace CatalogApiFinalProject.Controllers
                 FirstName = "John",
                 LastName = "Carpenter",
                 Age = 21,
-                Adresse = new Address
+                Address = new Address
                 {
                     City = "Newcastle",
                     Street = "Harbour",
@@ -704,7 +704,7 @@ namespace CatalogApiFinalProject.Controllers
                 FirstName = "Ionut",
                 LastName = "Antonescu",
                 Age = 22,
-                Adresse = new Address
+                Address = new Address
                 {
                     City = "Paris",
                     Street = "Lumiere",
@@ -775,7 +775,7 @@ namespace CatalogApiFinalProject.Controllers
                 FirstName = "Lucian",
                 LastName = "Coman",
                 Age = 31,
-                Adresse = new Address
+                Address = new Address
                 {
                     City = "Constanta",
                     Street = "Portului",
@@ -843,7 +843,7 @@ namespace CatalogApiFinalProject.Controllers
                 FirstName = "Andreea",
                 LastName = "Caliman",
                 Age = 35,
-                Adresse = new Address
+                Address = new Address
                 {
                     City = "Galati",
                     Street = "Dunarii",
@@ -911,7 +911,7 @@ namespace CatalogApiFinalProject.Controllers
                 FirstName = "George",
                 LastName = "Antonescu",
                 Age = 20,
-                Adresse = new Address
+                Address = new Address
                 {
                     City = "Cluj",
                     Street = "Transilvaniei",
@@ -979,7 +979,7 @@ namespace CatalogApiFinalProject.Controllers
                 FirstName = "Andreea",
                 LastName = "Coman",
                 Age = 18,
-                Adresse = new Address
+                Address = new Address
                 {
                     City = "Craiova",
                     Street = "Universitatii",
@@ -1047,7 +1047,7 @@ namespace CatalogApiFinalProject.Controllers
                 FirstName = "Razvan",
                 LastName = "Florea",
                 Age = 25,
-                Adresse = new Address
+                Address = new Address
                 {
                     City = "Suceava",
                     Street = "Bucovinei",
@@ -1115,7 +1115,7 @@ namespace CatalogApiFinalProject.Controllers
                 FirstName = "Gheorghe",
                 LastName = "Gherghel",
                 Age = 42,
-                Adresse = new Address
+                Address = new Address
                 {
                     City = "Madrid",
                     Street = "Huevos",
@@ -1183,7 +1183,7 @@ namespace CatalogApiFinalProject.Controllers
                 FirstName = "Izabela",
                 LastName = "Popa",
                 Age = 21,
-                Adresse = new Address
+                Address = new Address
                 {
                     City = "Roma",
                     Street = "Pizzeria",
@@ -1251,7 +1251,7 @@ namespace CatalogApiFinalProject.Controllers
                 FirstName = "Sebi",
                 LastName = "Popa",
                 Age = 21,
-                Adresse = new Address
+                Address = new Address
                 {
                     City = "Brasov",
                     Street = "Cerbului",

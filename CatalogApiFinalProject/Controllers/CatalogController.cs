@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CatalogApiFinalProject.Extensions;
+using System.Collections.Generic;
 
 namespace CatalogApiFinalProject.Controllers
 {
@@ -153,10 +154,10 @@ namespace CatalogApiFinalProject.Controllers
                 return NotFound("Sutdent has no marks.");
             }
 
-            var averages = student.Marks.Where(m => m.SubjectId != null).GroupBy(m => m.SubjectId).Select(
+            var averages = student.Marks.Where(m => m.Subject.Name != null).GroupBy(m => m.Subject.Name).Select(
                 g => new AverageForSubject
                 {
-                    SubjectId = (int)g.Key,
+                    Name= g.Key,
                     Average = g.Average(v => v.Value)
                 }).ToList();
 
@@ -169,12 +170,12 @@ namespace CatalogApiFinalProject.Controllers
                 dar cu media generala calculate
         */
         /// <summary>
-        /// Returns a list of StudentId (key) and its avereage (value) in order.
+        /// Returns a list stundents and their avereage in ascending or descending order.
         /// </summary>
         /// <param name="ascendingOrder"></param>
         /// <returns></returns>
         [HttpGet("all-averages")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IOrderedEnumerable<StudentWithAverage>))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         public IActionResult GetAllAveragesInOrder([FromQuery] bool ascendingOrder)
         {
@@ -190,31 +191,35 @@ namespace CatalogApiFinalProject.Controllers
                 return NotFound($"There are no subjects in catalog.");
             }
 
-            Dictionary<int, double> dictionary = new Dictionary<int, double>();
+            List < StudentWithAverage > studentsWithAverages = new List<StudentWithAverage>();
 
             foreach (var student in students)
             {
-                var average = student.Marks.Where(m => m.SubjectId != null).GroupBy(m => m.SubjectId).Select(
+                var average = student.Marks.Where(m => m.Subject.Name != null).GroupBy(m => m.Subject.Name).Select(
                 g => new AverageForSubject
                 {
-                    SubjectId = (int)g.Key,
+                    Name = g.Key,
                     Average = g.Average(v => v.Value)
                 }).ToList();
 
-                if (average.Select(a => a.Average).ToList().Count > 0)
+                studentsWithAverages.Add(new StudentWithAverage
                 {
-                    dictionary.Add(student.Id, average.Average(a => a.Average));
-                }
+                    FirstName = student.FirstName,
+                    LastName = student.LastName,
+                    Average = average.Average(a => a.Average),
+                });
             }
 
-            var orderdAverages = dictionary.OrderByDescending(a => a.Value);
+            IOrderedEnumerable<StudentWithAverage> studentsWithAveragesOrdered;
 
             if (ascendingOrder == true)
             {
-                orderdAverages = dictionary.OrderBy(a => a.Value);
+                studentsWithAveragesOrdered = studentsWithAverages.OrderBy(a => a.Average);
+                return Ok(studentsWithAveragesOrdered);
             }
 
-            return Ok(orderdAverages);
+            studentsWithAveragesOrdered = studentsWithAverages.OrderByDescending(a => a.Average);
+            return Ok(studentsWithAveragesOrdered);
         }
         /*
          Obtinerea tuturor notelor acordate de catre un

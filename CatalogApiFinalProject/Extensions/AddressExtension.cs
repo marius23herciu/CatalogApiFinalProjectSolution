@@ -5,15 +5,20 @@ namespace CatalogApiFinalProject.Extensions
 {
     public static class AddressExtension
     {
-        public static AddressToGet ToDto(this Address adresse)
+        public static AddressToGet ToDto(this Address address)
         {
-            return
-                new AddressToGet
-                {
-                    City = adresse.City,
-                    Street = adresse.Street,
-                    Number = adresse.Number,
-                };
+            if (address == null)
+            {
+                return null;
+            }
+
+            return new AddressToGet
+            {
+                Id = address.Id,
+                City = address.City,
+                Street = address.Street,
+                Number = address.Number
+            };
         }
     }
 }

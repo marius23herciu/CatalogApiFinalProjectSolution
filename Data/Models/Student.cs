@@ -13,7 +13,7 @@ namespace Data.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public int Age { get; set; }
-        public Address Adresse { get; set; }
+        public Address Address { get; set; }
         public List<Mark> Marks { get; set; } = new List<Mark>();
         public List<Subject> Subjects { get; set; } = new List<Subject>();
     }

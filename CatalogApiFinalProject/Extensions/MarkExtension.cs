@@ -7,6 +7,11 @@ namespace CatalogApiFinalProject.Extensions
     {
         public static MarkToGet ToDto(this Mark mark)
         {
+            if (mark == null)
+            {
+                return null;
+            }
+
             return
                 new MarkToGet
                 {
