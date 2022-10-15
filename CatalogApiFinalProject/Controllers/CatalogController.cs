@@ -97,10 +97,6 @@ namespace CatalogApiFinalProject.Controllers
             }
 
             var marks = student.Marks.Select(v => v.Value).ToList();
-            if (marks.Count == 0)
-            {
-                return NotFound($"{student.FirstName} {student.LastName} has no marks.");
-            }
 
             return Ok(marks);
         }

@@ -134,6 +134,14 @@ namespace CatalogApiFinalProject.Controllers
             {
                 return NotFound($"Teacher with Id {teacherId} does not exist.");
             }
+
+            var subject = ctx.Subjects.Where(s => s.Id == subjectId).FirstOrDefault();
+
+            if (subject == null)
+            {
+                return NotFound($"Subject with Id {subjectId} does not exist.");
+            }
+
             if (teacher.Subject != null)
             {
                 return BadRequest($"Teacher with Id {teacherId} is appointed to another subject.");
@@ -143,16 +151,10 @@ namespace CatalogApiFinalProject.Controllers
                 return BadRequest($"Subject is appointed to another teacher.");
             }
 
-            var subject = ctx.Subjects.Where(s => s.Id == subjectId).FirstOrDefault();
-            if (subject==null)
-            {
-                return NotFound($"Subject with Id {subjectId} does not exist.");
-            }
-
             teacher.Subject = subject;
             ctx.SaveChanges();
 
-            return Ok($"Subject with Id {subjectId} has been asigned to teacher with Id {teacherId}.");
+            return Ok();
         }
 
         /* Promovarea teacher-ului
@@ -186,7 +188,7 @@ namespace CatalogApiFinalProject.Controllers
             teacher.Rank++;
             ctx.SaveChanges();
 
-            return Ok("Teacher has been promoted.");
+            return Ok();
         }
 
 

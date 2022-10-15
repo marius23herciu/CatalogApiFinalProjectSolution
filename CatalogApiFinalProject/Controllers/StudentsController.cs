@@ -26,7 +26,7 @@ namespace CatalogApiFinalProject.Controllers
         /*• Obtinerea tuturor studentilor*/
 
         /// <summary>
-        /// Returns all students with name and age.
+        /// Returns all students with first name and last name.
         /// </summary>
         /// <returns></returns>
         [HttpGet("all")]
@@ -197,32 +197,28 @@ stearsa*/
                 return NotFound($"Student with Id {studentId} does not exist.");
             }
 
-            if (studentToRemove != null)
+            if (deleteAddress)
             {
-                if (deleteAddress == true)
+                var adresseToRemove = ctx.Adresses.Where(s => s.StudentId == studentId).FirstOrDefault();
+                if (adresseToRemove != null)
                 {
-                    var adresseToRemove = ctx.Adresses.Where(s => s.StudentId == studentId).FirstOrDefault();
-                    if (adresseToRemove!=null)
-                    {
 
-                        ctx.Adresses.Remove(adresseToRemove);
-                    }
-                    ctx.Students.Remove(studentToRemove);
+                    ctx.Adresses.Remove(adresseToRemove);
                 }
-                else
-                {
-                    ctx.Students.Remove(studentToRemove);
-                }
+                ctx.Students.Remove(studentToRemove);
+            }
+            else
+            {
+                ctx.Students.Remove(studentToRemove);
             }
 
             ctx.SaveChanges();
 
-            if (deleteAddress == false)
+            if (deleteAddress)
             {
-                return Ok("Student deleted without address.");
+                return Ok("Student deleted with its address.");
             }
-
-            return Ok("Student deleted with his address.");
+            return Ok("Student deleted without address.");
         }
     }
 }
