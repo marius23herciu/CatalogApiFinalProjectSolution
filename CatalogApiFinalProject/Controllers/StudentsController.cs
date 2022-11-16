@@ -39,7 +39,7 @@ namespace CatalogApiFinalProject.Controllers
         /*• Obtinerea unui student dupa ID*/
 
         /// <summary>
-        /// Returns informations of a selected student by his Id.
+        /// Returns data of a selected student by his Id.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>

@@ -15,13 +15,11 @@ namespace CatalogApiFinalProject.Controllers
     {
         private readonly CatalogueDbContext ctx;
         private readonly DataLayer dataLayer;
-        private readonly ILogger<CatalogController> logger;
 
-        public CatalogController(CatalogueDbContext ctx, DataLayer dataLayer, ILogger<CatalogController> logger)
+        public CatalogController(CatalogueDbContext ctx, DataLayer dataLayer)
         {
             this.ctx = ctx;
             this.dataLayer = dataLayer;
-            this.logger = logger;
         }
 
 
