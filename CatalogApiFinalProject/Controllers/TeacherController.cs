@@ -64,7 +64,7 @@ namespace CatalogApiFinalProject.Controllers
                 ctx.Adresses.Remove(addressToRemove);
             }
 
-            teacherToDelete.Subject = null;
+            teacherToDelete.SubjectId = null;
             ctx.Teachers.Remove(teacherToDelete);
             ctx.SaveChanges();
 
@@ -128,7 +128,7 @@ namespace CatalogApiFinalProject.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         public IActionResult GivesCourseToTeacher([FromRoute] int teacherId, [FromBody] int subjectId)
         {
-            var teacher = ctx.Teachers.Where(t => t.Id == teacherId).Include(s => s.Subject).FirstOrDefault();
+            var teacher = ctx.Teachers.Where(t => t.Id == teacherId).Include(s => s.SubjectId).FirstOrDefault();
 
             if (teacher == null)
             {
@@ -142,7 +142,7 @@ namespace CatalogApiFinalProject.Controllers
                 return NotFound($"Subject with Id {subjectId} does not exist.");
             }
 
-            if (teacher.Subject != null)
+            if (teacher.SubjectId != null)
             {
                 return BadRequest($"Teacher with Id {teacherId} is appointed to another subject.");
             }
@@ -151,7 +151,7 @@ namespace CatalogApiFinalProject.Controllers
                 return BadRequest($"Subject is appointed to another teacher.");
             }
 
-            teacher.Subject = subject;
+            teacher.SubjectId = subject.Id;
             ctx.SaveChanges();
 
             return Ok();

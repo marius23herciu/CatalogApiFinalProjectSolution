@@ -68,7 +68,7 @@ namespace CatalogApiFinalProject.Controllers
             var newMark = new Mark
             {
                 Value = markToCreate.Value,
-                SubjectId = markToCreate.SubjectId,
+                SubjectId = subject.Id,
                 DateTime = DateTime.Now,
             };
             student.Marks.Add(newMark);
@@ -129,96 +129,96 @@ namespace CatalogApiFinalProject.Controllers
             return Ok(marks);
         }
 
-        /*• Obtinerea mediilor per materie ale unui student*/
-        /// <summary>
-        /// Returns a list of all averages for a selected student.
-        /// </summary>
-        /// <param name="studentId"></param>
-        /// <returns></returns>
-        [HttpGet("all-average-for/{studentId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<>))]
-        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-        public IActionResult GetAllAveragesForOneStudent([FromRoute] int studentId)
-        {
-            var student = ctx.Students.Include(s => s.Subjects).Include(m => m.Marks).Where(s => s.Id == studentId).FirstOrDefault();
-            if (student == null)
-            {
-                return NotFound($"Studnet does not exist.");
-            }
+        ///*• Obtinerea mediilor per materie ale unui student*/
+        ///// <summary>
+        ///// Returns a list of all averages for a selected student.
+        ///// </summary>
+        ///// <param name="studentId"></param>
+        ///// <returns></returns>
+        //[HttpGet("all-average-for/{studentId}")]
+        //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<>))]
+        //[ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+        //public IActionResult GetAllAveragesForOneStudent([FromRoute] int studentId)
+        //{
+        //    var student = ctx.Students.Include(s => s.Subjects).Include(m => m.Marks).Where(s => s.Id == studentId).FirstOrDefault();
+        //    if (student == null)
+        //    {
+        //        return NotFound($"Studnet does not exist.");
+        //    }
 
-            var marks = student.Marks.Where(m => m.SubjectId != null).Select(v => v.Value).ToList();
-            if (marks.Count == 0)
-            {
-                return NotFound("Sutdent has no marks.");
-            }
+        //    var marks = student.Marks.Where(m => m.SubjectId != null).Select(v => v.Value).ToList();
+        //    if (marks.Count == 0)
+        //    {
+        //        return NotFound("Sutdent has no marks.");
+        //    }
 
-            var averages = student.Marks.Where(m => m.Subject.Name != null).GroupBy(m => m.Subject.Name).Select(
-                g => new AverageForSubject
-                {
-                    Name= g.Key,
-                    Average = g.Average(v => v.Value)
-                }).ToList();
+        //    var averages = student.Marks.Where(m => m.Subject.Name != null).GroupBy(m => m.Subject.Name).Select(
+        //        g => new AverageForSubject
+        //        {
+        //            Name= g.Key,
+        //            Average = g.Average(v => v.Value)
+        //        }).ToList();
 
-            return Ok(averages);
-        }
+        //    return Ok(averages);
+        //}
 
-        /* Obtinerea listei studentilor in ordine a mediilor
-                • Ordinea este configurabila ascending/descending
-                • DTO-ul va returna informatiile despre student, fara adresa, note,
-                dar cu media generala calculate
-        */
-        /// <summary>
-        /// Returns a list stundents and their avereage in ascending or descending order.
-        /// </summary>
-        /// <param name="ascendingOrder"></param>
-        /// <returns></returns>
-        [HttpGet("all-averages")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IOrderedEnumerable<StudentWithAverage>))]
-        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-        public IActionResult GetAllAveragesInOrder([FromQuery] bool ascendingOrder)
-        {
-            var students = ctx.Students.Include(s => s.Subjects).Include(m => m.Marks).ToList();
-            if (students == null)
-            {
-                return NotFound($"There are no students in catalog.");
-            }
+        ///* Obtinerea listei studentilor in ordine a mediilor
+        //        • Ordinea este configurabila ascending/descending
+        //        • DTO-ul va returna informatiile despre student, fara adresa, note,
+        //        dar cu media generala calculate
+        //*/
+        ///// <summary>
+        ///// Returns a list stundents and their avereage in ascending or descending order.
+        ///// </summary>
+        ///// <param name="ascendingOrder"></param>
+        ///// <returns></returns>
+        //[HttpGet("all-averages")]
+        //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IOrderedEnumerable<StudentWithAverage>))]
+        //[ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+        //public IActionResult GetAllAveragesInOrder([FromQuery] bool ascendingOrder)
+        //{
+        //    var students = ctx.Students.Include(s => s.Subjects).Include(m => m.Marks).ToList();
+        //    if (students == null)
+        //    {
+        //        return NotFound($"There are no students in catalog.");
+        //    }
 
-            var subjects = ctx.Subjects.ToList();
-            if (subjects == null)
-            {
-                return NotFound($"There are no subjects in catalog.");
-            }
+        //    var subjects = ctx.Subjects.ToList();
+        //    if (subjects == null)
+        //    {
+        //        return NotFound($"There are no subjects in catalog.");
+        //    }
 
-            List < StudentWithAverage > studentsWithAverages = new List<StudentWithAverage>();
+        //    List < StudentWithAverage > studentsWithAverages = new List<StudentWithAverage>();
 
-            foreach (var student in students)
-            {
-                var average = student.Marks.Where(m => m.Subject.Name != null).GroupBy(m => m.Subject.Name).Select(
-                g => new AverageForSubject
-                {
-                    Name = g.Key,
-                    Average = g.Average(v => v.Value)
-                }).ToList();
+        //    foreach (var student in students)
+        //    {
+        //        var average = student.Marks.Where(m => m.Subject.Name != null).GroupBy(m => m.Subject.Name).Select(
+        //        g => new AverageForSubject
+        //        {
+        //            Name = g.Key,
+        //            Average = g.Average(v => v.Value)
+        //        }).ToList();
 
-                studentsWithAverages.Add(new StudentWithAverage
-                {
-                    FirstName = student.FirstName,
-                    LastName = student.LastName,
-                    Average = average.Average(a => a.Average),
-                });
-            }
+        //        studentsWithAverages.Add(new StudentWithAverage
+        //        {
+        //            FirstName = student.FirstName,
+        //            LastName = student.LastName,
+        //            Average = average.Average(a => a.Average),
+        //        });
+        //    }
 
-            IOrderedEnumerable<StudentWithAverage> studentsWithAveragesOrdered;
+        //    IOrderedEnumerable<StudentWithAverage> studentsWithAveragesOrdered;
 
-            if (ascendingOrder == true)
-            {
-                studentsWithAveragesOrdered = studentsWithAverages.OrderBy(a => a.Average);
-                return Ok(studentsWithAveragesOrdered);
-            }
+        //    if (ascendingOrder == true)
+        //    {
+        //        studentsWithAveragesOrdered = studentsWithAverages.OrderBy(a => a.Average);
+        //        return Ok(studentsWithAveragesOrdered);
+        //    }
 
-            studentsWithAveragesOrdered = studentsWithAverages.OrderByDescending(a => a.Average);
-            return Ok(studentsWithAveragesOrdered);
-        }
+        //    studentsWithAveragesOrdered = studentsWithAverages.OrderByDescending(a => a.Average);
+        //    return Ok(studentsWithAveragesOrdered);
+        //}
         /*
          Obtinerea tuturor notelor acordate de catre un
          teacher:
@@ -236,7 +236,7 @@ namespace CatalogApiFinalProject.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         public IActionResult GetAllMarksGivenByTeacher([FromRoute] int teacherId)
         {
-            var teacher = ctx.Teachers.Include(m => m.Subject).Where(s => s.Id == teacherId).FirstOrDefault();
+            var teacher = ctx.Teachers.Include(m => m.SubjectId).Where(s => s.Id == teacherId).FirstOrDefault();
             if (teacher == null)
             {
                 return NotFound($"Teacher does not exist.");
@@ -260,7 +260,7 @@ namespace CatalogApiFinalProject.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         public IActionResult DeleteSubject([FromBody] int subjectId, [FromQuery] bool keepMarks)
         {
-            var subjectToDelete = ctx.Subjects.Include(m => m.Marks).Include(t => t.Teacher).Where(s => s.Id == subjectId).FirstOrDefault();
+            var subjectToDelete = ctx.Subjects.Include(t => t.TeacherId).Where(s => s.Id == subjectId).FirstOrDefault();
             if (subjectToDelete == null)
             {
                 return NotFound("Subject not found.");
