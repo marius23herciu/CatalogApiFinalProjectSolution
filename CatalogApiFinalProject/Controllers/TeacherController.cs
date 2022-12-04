@@ -32,7 +32,7 @@ namespace CatalogApiFinalProject.Controllers
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(TeacherToGet))]
         public IActionResult CreateTeacher([FromBody] TeacherToCreate teacherToCreate)
         {
-            var newTeacher = dataLayer.CreateTeacher(teacherToCreate.FirstName, teacherToCreate.LastName, teacherToCreate.Rank);
+            var newTeacher = dataLayer.CreateTeacher(teacherToCreate.FirstName, teacherToCreate.LastName, teacherToCreate.Rank).Result;
 
             return Created("New Student Created.", newTeacher.ToDto());
         }
@@ -48,16 +48,16 @@ namespace CatalogApiFinalProject.Controllers
         [HttpDelete("delete-teacher/{teacherId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-        public IActionResult DeleteTeacher([FromBody] int teacherId)
+        public async Task<IActionResult> DeleteTeacher([FromBody] int teacherId)
         {
-            var teacherToDelete = ctx.Teachers.Include(a => a.Address).Where(s => s.Id == teacherId).FirstOrDefault();
+            var teacherToDelete = await ctx.Teachers.Include(a => a.Address).Where(s => s.Id == teacherId).FirstOrDefaultAsync();
 
             if (teacherToDelete == null)
             {
                 return NotFound("Teacher not found.");
             }
 
-            var addressToRemove = ctx.Adresses.Where(t => t.TeacherId == teacherId).FirstOrDefault();
+            var addressToRemove = await ctx.Adresses.Where(t => t.TeacherId == teacherId).FirstOrDefaultAsync();
 
             if (addressToRemove != null && addressToRemove.StudentId == null)
             {
@@ -66,7 +66,7 @@ namespace CatalogApiFinalProject.Controllers
 
             teacherToDelete.SubjectId = null;
             ctx.Teachers.Remove(teacherToDelete);
-            ctx.SaveChanges();
+            await ctx.SaveChangesAsync();
 
             return Ok();
         }
@@ -82,9 +82,9 @@ namespace CatalogApiFinalProject.Controllers
         [HttpPut("change-address/{teacherId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-        public IActionResult ChangeTeachersAddress([FromRoute] int teacherId, [FromBody] AddressToCreate address)
+        public async Task<IActionResult> ChangeTeachersAddress([FromRoute] int teacherId, [FromBody] AddressToCreate address)
         {
-            var teacher = ctx.Teachers.Include(s => s.Address).Where(t => t.Id == teacherId).FirstOrDefault();
+            var teacher = await ctx.Teachers.Include(s => s.Address).Where(t => t.Id == teacherId).FirstOrDefaultAsync();
 
             if (teacher == null)
             {
@@ -108,7 +108,7 @@ namespace CatalogApiFinalProject.Controllers
                 addressToChange.Number = address.Number;
             }
 
-            ctx.SaveChanges();
+            await ctx.SaveChangesAsync();
 
             return Ok();
         }
@@ -126,16 +126,16 @@ namespace CatalogApiFinalProject.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        public IActionResult GivesCourseToTeacher([FromRoute] int teacherId, [FromBody] int subjectId)
+        public async Task<IActionResult> GivesCourseToTeacher([FromRoute] int teacherId, [FromBody] int subjectId)
         {
-            var teacher = ctx.Teachers.Where(t => t.Id == teacherId).Include(s => s.SubjectId).FirstOrDefault();
+            var teacher = await ctx.Teachers.Where(t => t.Id == teacherId).Include(s => s.SubjectId).FirstOrDefaultAsync();
 
             if (teacher == null)
             {
                 return NotFound($"Teacher with Id {teacherId} does not exist.");
             }
 
-            var subject = ctx.Subjects.Where(s => s.Id == subjectId).FirstOrDefault();
+            var subject = await ctx.Subjects.Where(s => s.Id == subjectId).FirstOrDefaultAsync();
 
             if (subject == null)
             {
@@ -146,13 +146,13 @@ namespace CatalogApiFinalProject.Controllers
             {
                 return BadRequest($"Teacher with Id {teacherId} is appointed to another subject.");
             }
-            if (ctx.Teachers.Any(s => s.SubjectId == subjectId)== true)
+            if (await ctx.Teachers.AnyAsync(s => s.SubjectId == subjectId)== true)
             {
                 return BadRequest($"Subject is appointed to another teacher.");
             }
 
             teacher.SubjectId = subject.Id;
-            ctx.SaveChanges();
+            await ctx.SaveChangesAsync();
 
             return Ok();
         }
@@ -171,9 +171,9 @@ namespace CatalogApiFinalProject.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        public IActionResult PromoteTeacher([FromRoute] int teacherId)
+        public async Task<IActionResult> PromoteTeacher([FromRoute] int teacherId)
         {
-            var teacher = ctx.Teachers.Where(t => t.Id == teacherId).FirstOrDefault();
+            var teacher = await ctx.Teachers.Where(t => t.Id == teacherId).FirstOrDefaultAsync();
 
             if (teacher == null)
             {
@@ -186,7 +186,7 @@ namespace CatalogApiFinalProject.Controllers
             }
 
             teacher.Rank++;
-            ctx.SaveChanges();
+            await ctx.SaveChangesAsync();
 
             return Ok();
         }

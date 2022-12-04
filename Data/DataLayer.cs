@@ -172,26 +172,26 @@ namespace Data
         }
 
 
-        public Subject AddSubject(string name)
+        public async Task<Subject> AddSubject(string name)
         {
             var newSubject = new Subject
             {
                 Name = name,
             };
 
-            ctx.Add(newSubject);
+            await ctx.AddAsync(newSubject);
             foreach (var student in ctx.Students)
             {
                 student.Subjects.Add(newSubject);
             }
-            ctx.SaveChanges();
+            await ctx.SaveChangesAsync();
 
             return newSubject;
         }
 
-        public Student CreateStudent(string firstName, string lastName, int age)
+        public async Task<Student> CreateStudent(string firstName, string lastName, int age)
         {
-            var subjects = ctx.Subjects.ToList();
+            var subjects = await ctx.Subjects.ToListAsync();
 
             var newStudent = new Student
             {
@@ -201,13 +201,13 @@ namespace Data
                 Subjects = subjects,
             };
 
-            ctx.Add(newStudent);
-            ctx.SaveChanges();
+            await ctx.AddAsync(newStudent);
+            await ctx.SaveChangesAsync();
 
             return newStudent;
         }
 
-        public Teacher CreateTeacher(string firstName, string lastName, Rank rank)
+        public async Task<Teacher> CreateTeacher(string firstName, string lastName, Rank rank)
         {
             var newTeacher = new Teacher
             {
@@ -216,8 +216,8 @@ namespace Data
                 Rank = rank,
             };
 
-            ctx.Add(newTeacher);
-            ctx.SaveChanges();
+            await ctx.AddAsync(newTeacher);
+            await ctx.SaveChangesAsync();
 
             return newTeacher;
         }

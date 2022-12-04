@@ -34,7 +34,7 @@ namespace CatalogApiFinalProject.Controllers
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(SubjectToGet))]
         public IActionResult AddSubject([FromBody] SubjectToCreate subjectToCreate)
         {
-            var newSubject = dataLayer.AddSubject(subjectToCreate.Name).ToDto();
+            var newSubject = dataLayer.AddSubject(subjectToCreate.Name).Result.ToDto();
             return Created("New Subject Created.", newSubject);
         }
 
@@ -49,16 +49,16 @@ namespace CatalogApiFinalProject.Controllers
         [HttpPut("give-mark/{studentId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-        public IActionResult AddMarkToStudent([FromBody] MarkToCreate markToCreate)
+        public async Task<IActionResult> AddMarkToStudent([FromBody] MarkToCreate markToCreate)
         {
-            var student = ctx.Students.Where(s => s.Id == markToCreate.StudentId).FirstOrDefault();
+            var student = await ctx.Students.Where(s => s.Id == markToCreate.StudentId).FirstOrDefaultAsync();
 
             if (student == null)
             {
                 return NotFound($"Student with Id {markToCreate.StudentId} does not exist.");
             }
 
-            var subject = ctx.Subjects.Where(s => s.Id == markToCreate.SubjectId).FirstOrDefault();
+            var subject = await ctx.Subjects.Where(s => s.Id == markToCreate.SubjectId).FirstOrDefaultAsync();
 
             if (subject == null)
             {
@@ -73,7 +73,7 @@ namespace CatalogApiFinalProject.Controllers
             };
             student.Marks.Add(newMark);
 
-            ctx.SaveChanges();
+            await ctx.SaveChangesAsync();
 
             return Ok();
         }
@@ -87,9 +87,10 @@ namespace CatalogApiFinalProject.Controllers
         [HttpGet("all-marks-for/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<int>))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-        public IActionResult GetAllMarks([FromRoute] int id)
+        public async Task<IActionResult> GetAllMarks([FromRoute] int id)
         {
-            var student = ctx.Students.Include(m => m.Marks).Where(s => s.Id == id).FirstOrDefault();
+            var student = await ctx.Students.Include(m => m.Marks).Where(s => s.Id == id).FirstOrDefaultAsync();
+
             if (student == null)
             {
                 return NotFound($"Student does not exist.");
@@ -110,15 +111,16 @@ namespace CatalogApiFinalProject.Controllers
         [HttpGet("all-marks-for/{studentId}/in-{subjectId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<int>))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-        public IActionResult GetAllMarksForSpecificSubject([FromRoute] int studentId, [FromRoute] int subjectId)
+        public async Task<IActionResult> GetAllMarksForSpecificSubject([FromRoute] int studentId, [FromRoute] int subjectId)
         {
-            var student = ctx.Students.Include(m => m.Marks).Where(s => s.Id == studentId).FirstOrDefault();
+            var student = await ctx.Students.Include(m => m.Marks).Where(s => s.Id == studentId).FirstOrDefaultAsync();
             if (student == null)
             {
                 return NotFound($"Student does not exist.");
             }
 
-            var subject = ctx.Subjects.Where(s => s.Id == subjectId).FirstOrDefault();
+            var subject = await ctx.Subjects.Where(s => s.Id == subjectId).FirstOrDefaultAsync();
+
             if (subject == null)
             {
                 return NotFound($"Subject does not exist.");
@@ -128,6 +130,11 @@ namespace CatalogApiFinalProject.Controllers
 
             return Ok(marks);
         }
+
+
+        //.//Rezolva urmatoarele 2 endpointuri
+        //vezi de Id teacher si subjectID
+
 
         ///*• Obtinerea mediilor per materie ale unui student*/
         ///// <summary>
@@ -234,15 +241,15 @@ namespace CatalogApiFinalProject.Controllers
         [HttpGet("all-marks-from/{teacherId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<>))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-        public IActionResult GetAllMarksGivenByTeacher([FromRoute] int teacherId)
+        public async Task<IActionResult> GetAllMarksGivenByTeacher([FromRoute] int teacherId)
         {
-            var teacher = ctx.Teachers.Include(m => m.SubjectId).Where(s => s.Id == teacherId).FirstOrDefault();
+            var teacher = await ctx.Teachers.Include(m => m.SubjectId).Where(s => s.Id == teacherId).FirstOrDefaultAsync();
             if (teacher == null)
             {
                 return NotFound($"Teacher does not exist.");
             }
 
-            var marks = ctx.Marks.Where(m => m.SubjectId == teacher.SubjectId).Select(v => v.Value).ToList();
+            var marks = await ctx.Marks.Where(m => m.SubjectId == teacher.SubjectId).Select(v => v.Value).ToListAsync();
 
             return Ok(marks);
         }
@@ -258,9 +265,10 @@ namespace CatalogApiFinalProject.Controllers
         [HttpDelete("delete-subject/{subjectId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-        public IActionResult DeleteSubject([FromBody] int subjectId, [FromQuery] bool keepMarks)
+        public async Task<IActionResult> DeleteSubject([FromBody] int subjectId, [FromQuery] bool keepMarks)
         {
-            var subjectToDelete = ctx.Subjects.Include(t => t.TeacherId).Where(s => s.Id == subjectId).FirstOrDefault();
+            var subjectToDelete = await ctx.Subjects.Include(t => t.TeacherId).Where(s => s.Id == subjectId).FirstOrDefaultAsync();
+
             if (subjectToDelete == null)
             {
                 return NotFound("Subject not found.");
@@ -268,12 +276,12 @@ namespace CatalogApiFinalProject.Controllers
 
             if (keepMarks != true)
             {
-                var marks = ctx.Marks.Where(m => m.SubjectId == subjectId).ToList();
+                var marks = await ctx.Marks.Where(m => m.SubjectId == subjectId).ToListAsync();
                 ctx.Marks.RemoveRange(marks);
             }
 
             ctx.Subjects.Remove(subjectToDelete);
-            ctx.SaveChanges();
+            await ctx.SaveChangesAsync ();
 
             return Ok();
         }

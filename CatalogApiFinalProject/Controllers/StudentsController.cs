@@ -31,9 +31,9 @@ namespace CatalogApiFinalProject.Controllers
         /// <returns></returns>
         [HttpGet("all")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<StudentWithAddressToGet>))]
-        public IActionResult GetAllStudents()
+        public async Task<IActionResult> GetAllStudents()
         {
-            return Ok(ctx.Students.Include(s => s.Address).Select(s => s.ToDto()).ToList());
+            return Ok(await ctx.Students.Include(s => s.Address).Select(s => s.ToDto()).ToListAsync());
         }
 
         /*• Obtinerea unui student dupa ID*/
@@ -46,10 +46,10 @@ namespace CatalogApiFinalProject.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StudentWithAddressToGet))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-        public IActionResult GetStudentById([FromRoute] int id)
+        public async Task<IActionResult> GetStudentById([FromRoute] int id)
         {
-            var student = ctx.Students.Include(a=>a.Address).Where(s => s.Id == id).FirstOrDefault();
-            if (student==null)
+            var student = await ctx.Students.Include(a => a.Address).Where(s => s.Id == id).FirstOrDefaultAsync();
+            if (student == null)
             {
                 return NotFound("Student Id does not exist.");
             }
@@ -67,7 +67,7 @@ namespace CatalogApiFinalProject.Controllers
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(StudentWithAddressToGet))]
         public IActionResult CreateStudent([FromBody] StudentToCreate studentToCreate)
         {
-            var newStudent = dataLayer.CreateStudent(studentToCreate.FirstName, studentToCreate.LastName, studentToCreate.Age);
+            var newStudent = dataLayer.CreateStudent(studentToCreate.FirstName, studentToCreate.LastName, studentToCreate.Age).Result;
             return Created("New Student Created.", newStudent.ToDto());
         }
 
@@ -80,9 +80,9 @@ namespace CatalogApiFinalProject.Controllers
         [HttpDelete("delete/{studentId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-        public IActionResult DeleteStudent([FromBody] int studentId)
+        public async Task<IActionResult> DeleteStudent([FromBody] int studentId)
         {
-            var studentToRemove = ctx.Students.Include(a => a.Address).Where(s => s.Id == studentId).FirstOrDefault();
+            var studentToRemove = await ctx.Students.Include(a => a.Address).Where(s => s.Id == studentId).FirstOrDefaultAsync();
 
             if (studentToRemove == null)
             {
@@ -91,7 +91,7 @@ namespace CatalogApiFinalProject.Controllers
 
             studentToRemove.Address = null;
             ctx.Students.Remove(studentToRemove);
-            ctx.SaveChanges();
+            await ctx.SaveChangesAsync();
 
             return Ok();
         }
@@ -106,9 +106,9 @@ namespace CatalogApiFinalProject.Controllers
         [HttpPut("change-data/{studentId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-        public IActionResult ChangeStudentData([FromRoute] int studentId, [FromBody] StudentData studentData)
+        public async Task<IActionResult> ChangeStudentData([FromRoute] int studentId, [FromBody] StudentData studentData)
         {
-            var student = ctx.Students.Where(s => s.Id == studentId).FirstOrDefault();
+            var student = await ctx.Students.Where(s => s.Id == studentId).FirstOrDefaultAsync();
 
             if (student == null)
             {
@@ -128,7 +128,7 @@ namespace CatalogApiFinalProject.Controllers
                 student.Age = studentData.Age;
             }
 
-            ctx.SaveChanges();
+            await ctx.SaveChangesAsync();
 
             return Ok();
         }
@@ -144,9 +144,9 @@ namespace CatalogApiFinalProject.Controllers
         [HttpPut("change-Address/{studentId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-        public IActionResult ChangeStudentAddress([FromRoute] int studentId, [FromBody] AddressToCreate address)
+        public async Task<IActionResult> ChangeStudentAddress([FromRoute] int studentId, [FromBody] AddressToCreate address)
         {
-            var student = ctx.Students.Include(s => s.Address).Where(s => s.Id == studentId).FirstOrDefault();
+            var student = await ctx.Students.Include(s => s.Address).Where(s => s.Id == studentId).FirstOrDefaultAsync();
 
             if (student == null)
             {
@@ -170,7 +170,7 @@ namespace CatalogApiFinalProject.Controllers
                 adresseToChange.Number = address.Number;
             }
 
-            ctx.SaveChanges();
+            await ctx.SaveChangesAsync();
 
             return Ok();
         }
@@ -187,9 +187,9 @@ stearsa*/
         [HttpDelete("delete")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-        public IActionResult DeleteStudentAndAddress([FromBody] int studentId, [FromQuery] bool deleteAddress)
+        public async Task<IActionResult> DeleteStudentAndAddress([FromBody] int studentId, [FromQuery] bool deleteAddress)
         {
-            var studentToRemove = ctx.Students.Include(a => a.Address).Where(s => s.Id == studentId).FirstOrDefault();
+            var studentToRemove = await ctx.Students.Include(a => a.Address).Where(s => s.Id == studentId).FirstOrDefaultAsync();
 
             if (studentToRemove == null)
             {
@@ -198,7 +198,7 @@ stearsa*/
 
             if (deleteAddress)
             {
-                var adresseToRemove = ctx.Adresses.Where(s => s.StudentId == studentId).FirstOrDefault();
+                var adresseToRemove = await ctx.Adresses.Where(s => s.StudentId == studentId).FirstOrDefaultAsync();
                 if (adresseToRemove != null)
                 {
 
@@ -211,7 +211,7 @@ stearsa*/
                 ctx.Students.Remove(studentToRemove);
             }
 
-            ctx.SaveChanges();
+            await ctx.SaveChangesAsync();
 
             if (deleteAddress)
             {
